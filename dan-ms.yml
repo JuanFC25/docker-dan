@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  ms-usuarios:
+    build:
+      context: ../ms-usuarios/
+      dockerfile: ./Dockerfile
+    ports:
+      - 9100:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-dan:3306/dan
+      - spring.profiles.active=default
+    networks:
+      - dan-db-network
+
+  ms-productos:
+    container_name: ms-productos
+    build:
+      context: ../ms-productos/
+      dockerfile: ./Dockerfile
+    ports:
+      - 9200:3000
+    environment:
+      - DB_PASS="admin"
+      - DB_USER="admin"
+      - DB_NAME="ms-productos"
+      - DB_PORT="5432"
+    networks:
+      - dan-db-network
+
+  ms-pedidos:
+    container_name: ms-pedidos
+    build:
+      context: ../ms-pedidos/
+      dockerfile: ./Dockerfile
+    ports:
+      - 9300:8080
+    environment:
+      - SPRING_DATASOURCE_URL=mongodb://root:dan@mongo-dan:27017/dan-pedidos?authSource=admin
+      - spring.profiles.active=default
+    networks:
+      - dan-db-network
+
+  ms-pago:
+    container_name: ms-pago
+    build:
+      context: ../ms-pago/
+      dockerfile: ./Dockerfile
+    ports:
+      - 9400:8080
+    environment:
+      - SPRING_DATASOURCE_URL=mongodb://root:dan@mongo-dan:27017/dan-pedidos?authSource=admin
+      - spring.profiles.active=default
+    networks:
+      - dan-db-network
+
+networks:
+  dan-db-network:
+    driver: bridge
